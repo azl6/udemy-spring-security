@@ -6,6 +6,7 @@
 
 ## Liberação de endpoints básica
 Com a depreciação da classe `WebSecurityConfigurerAdapter`, podemos utilizar a `SecurityFilterChain` como alternativa para configurações de liberação de endpoints.<br>
+
 <a href="https://github.com/azl6/eazybytes-spring-security/blob/main/section2/springsecsection2latest/src/main/java/com/eazybytes/config/ProjectSecurityConfig.java" target="_blank">Exemplo de utilização do SecurityFilterChain</a>
 
 ## Criando múltiplos usuários autenticáveis
@@ -18,8 +19,11 @@ Pela imagem acima, observamos que as classes concretas `InMemoryUserDetailsManag
 ⚠️ Todas as implementações precisam de um `PasswordEncoder`, caso contrário, o Spring lançará uma exception. ⚠️ <br><br>
 
 
-`InMemoryUserDetailsManager:` Classe para gerenciamento de usuários em memória. O `PasswordEncoder`, neste caso, é passado como um @Bean, que o Spring utilizará sempre que necessário. <br><br>
-**Exemplo:** <br>
+### InMemoryUserDetailsManager
+
+Classe para gerenciamento de usuários em memória. O `PasswordEncoder`, neste caso, é passado como um @Bean, que o Spring utilizará sempre que necessário. 
+
+**Exemplo:** 
 ```
 @Bean
 public InMemoryUserDetailsManager userDetailsService() {
@@ -34,10 +38,50 @@ public InMemoryUserDetailsManager userDetailsService() {
 @Bean
 public PasswordEncoder passwordEncoder() {
        return NoOpPasswordEncoder.getInstance();
-    }
+}
 ```
 
-`JdbcUserDetailsManager:` Classe para gerenciamento de usuários em bancos convencionais (MySQL, Oracle, PostgreSQL, etc) <br>
+<br>
+
+### JdbcUserDetailsManager
+Classe para gerenciamento de usuários em bancos convencionais (MySQL, Oracle, PostgreSQL, etc)
+
+<a href="https://docs.spring.io/spring-security/reference/servlet/authentication/passwords/jdbc.html" target="_blank">Link para a documentação do JdbcUserDetailsManager</a>
+
+Neste caso, a idéia é que tenhamos um banco com os usuários registrados, e o acesso a um endpoint protegido será liberado quando forem informados um username/password que estejam registrados no banco. 
+
+Como optamos por utilizar uma implementação pronta do Spring, devemos criar as seguintes tabelas, que são esperadas pelo framework para que a autenticação funcione.
+
+```
+create table users(
+	username varchar_ignorecase(50) not null primary key,
+	password varchar_ignorecase(500) not null,
+	enabled boolean not null
+);
+
+create table authorities (
+	username varchar_ignorecase(50) not null,
+	authority varchar_ignorecase(50) not null,
+	constraint fk_authorities_users foreign key(username) references users(username)
+);
+```
+
+Tendo o data source no app.properties apontando para um banco com as tabelas acima, basta criarmos os seguintes @Bean
+
+```
+@Bean
+public UserDetailsService userDetailsService(DataSource dataSource) {
+        return new JdbcUserDetailsManager(dataSource);
+}
+
+@Bean
+public PasswordEncoder passwordEncoder() {
+        return NoOpPasswordEncoder.getInstance();
+}
+```
+
+A fim de testar a implementação acima apresentada, podemos inserir o seguinte usuário no banco, subir a aplicação e tentar acessar um endpoint protegido, passando as suas credenciais:
+
+![img](https://user-images.githubusercontent.com/80921933/194734967-2c122440-7d42-43ad-8542-6bd772687b35.png)
 
 
-`LdapUserDetailsManager:` Classe de gerenciamento de usuários armazenados em uma base de dados LDAP
