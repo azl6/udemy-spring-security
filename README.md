@@ -23,8 +23,10 @@ Pela imagem acima, observamos que as classes concretas `InMemoryUserDetailsManag
 
 Classe para gerenciamento de usuários em memória. O `PasswordEncoder`, neste caso, é passado como um @Bean, que o Spring utilizará sempre que necessário. 
 
+<br>
+
 **Exemplo:** 
-```
+```java
 @Bean
 public InMemoryUserDetailsManager userDetailsService() {
         InMemoryUserDetailsManager userDetailsService = new InMemoryUserDetailsManager();
@@ -52,7 +54,7 @@ Neste caso, a idéia é que tenhamos um banco com os usuários registrados, e o 
 
 Como optamos por utilizar uma implementação pronta do Spring, devemos criar as seguintes tabelas, que são esperadas pelo framework para que a autenticação funcione.
 
-```
+```sql
 create table users(
 	username varchar_ignorecase(50) not null primary key,
 	password varchar_ignorecase(500) not null,
@@ -68,7 +70,7 @@ create table authorities (
 
 Tendo o data source no app.properties apontando para um banco com as tabelas acima, basta criarmos os seguintes @Bean
 
-```
+```java
 @Bean
 public UserDetailsService userDetailsService(DataSource dataSource) {
         return new JdbcUserDetailsManager(dataSource);
@@ -83,5 +85,22 @@ public PasswordEncoder passwordEncoder() {
 A fim de testar a implementação acima apresentada, podemos inserir o seguinte usuário no banco, subir a aplicação e tentar acessar um endpoint protegido, passando as suas credenciais:
 
 ![img](https://user-images.githubusercontent.com/80921933/194734967-2c122440-7d42-43ad-8542-6bd772687b35.png)
+
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+
+**Caso não queiramos utilizar a implementação padrão da autenticação via JDBC do Spring Framework**, podemos começar criando uma nova tabela de usuários personalizada
+
+```sql
+CREATE TABLE `customer` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `email` varchar(45) NOT NULL,
+  `pwd` varchar(200) NOT NULL,
+  `role` varchar(45) NOT NULL,
+  PRIMARY KEY (`id`)
+);
+
+INSERT INTO `customer` (`email`, `pwd`, `role`)
+ VALUES ('johndoe@example.com', '54321', 'admin');
+ ```
 
 
