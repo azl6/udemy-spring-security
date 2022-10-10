@@ -152,5 +152,26 @@ public class EazyBankUserDetails implements UserDetailsService {
  ```
  
  Após isso, utilizando as credenciais cadastradas anteriormente, poderemos acessar endpoints protegidos.
+ 
+ Para **registrar** novos usuários, basta criar um controller que recebe um @RequestBody de Customer (ou qualquer outro nome escolhido para a classe do usuário) e salvá-lo no banco. Pontos importantes:
+ 
+- Os valores conhecidos do campo **role**, até o momento, são **admin** e **user**
 
+![img](https://user-images.githubusercontent.com/80921933/194880715-1d1f9e07-6b2a-44bc-9170-4b231b02a77f.png)
+
+- Por padrão, **o Spring Security desativará requisições que podem fazer alterações no banco (POST/PUT)**. Isso é uma feature do CSRF. Como esse assunto ainda não fora abordado, **desativaremos esse recurso** na classe **SecurityFilterChain** 
+
+```java
+@Configuration
+public class ProjectSecurityConfig {
+
+    @Bean
+    SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
+        http.csrf().disable() //Desativação do CSRF...
+                        .authorizeRequests()
+                        .antMatchers("/myAccount","/myBalance","/myLoans","/myCards").authenticated()
+                        //Restante do código de liberação de endpoints...
+        return http.build();
+    }
+```
 
