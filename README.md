@@ -15,15 +15,22 @@ Com a depreciação da classe `WebSecurityConfigurerAdapter`, podemos utilizar a
 
 Pela imagem acima, observamos que as classes concretas `InMemoryUserDetailsManager`,  `JdbcUserDetailsManager`, `LdapUserDetailsManager` utilizam das funções de todas as suas interfaces superiores. 
 
+<br>
 
-⚠️ Todas as implementações precisam de um `PasswordEncoder`, caso contrário, o Spring lançará uma exception. ⚠️ <br><br>
+⚠️ Todas as implementações precisam de um `PasswordEncoder`, caso contrário, o Spring lançará uma exception. Nos exemplos abaixo, utilizaremos a NoOpPasswordEncoder, que serve exclusivamente para fins de teste e demonstração. Ele salvará a senha no banco em plain-text. 
 
+```java
+@Bean
+public PasswordEncoder passwordEncoder() {
+       return NoOpPasswordEncoder.getInstance();
+}
+```
+
+<br>
 
 ### InMemoryUserDetailsManager
 
 Classe para gerenciamento de usuários em memória. O `PasswordEncoder`, neste caso, é passado como um @Bean, que o Spring utilizará sempre que necessário. 
-
-<br>
 
 **Exemplo:** 
 ```java
@@ -35,11 +42,6 @@ public InMemoryUserDetailsManager userDetailsService() {
         userDetailsService.createUser(admin);
         userDetailsService.createUser(user);
         return userDetailsService; 
-}
-
-@Bean
-public PasswordEncoder passwordEncoder() {
-       return NoOpPasswordEncoder.getInstance();
 }
 ```
 
@@ -178,5 +180,42 @@ public class ProjectSecurityConfig {
 ## Gerenciamento de senhas com encode, encriptação e hashing
 
 ![image](https://user-images.githubusercontent.com/80921933/194893581-f0c0b114-49ef-435c-b5f8-f1a450c55804.png)
+
+A fim de armazenar senhas de forma segura no banco, podemos utilizar algumas implementações do PasswordEncoder. As mais conhecidas com encriptação hashing são:
+- BCryptPasswordEncoder
+- SCryptPasswordEncoder
+- Argon2PasswordEncoder
+
+Neste exemplo, utilizaremos a BCryptPasswordEncoder. Para tal, devemos disponibilizar um @Bean de PasswordEncoder que retorna a implementação BCryptPasswordEncoder sempre que um PasswordEncoder for injetado
+
+```java
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+```
+
+Depois, basta que encriptemos a senha antes de salvá-la no banco. Importante ressaltar que devemos injetar uma instância de `PasswordEncoder` na classe que realizará a encriptação
+
+```java
+@RestController
+public class LoginController {
+
+    @Autowired
+    private CustomerRepository customerRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder; //Injetando o PasswordEncoder com o @Bean de BCryptPasswordEncoder
+
+    @PostMapping("/register")
+    public ResponseEntity<String> registerUser(@RequestBody Customer customer) {
+        Customer savedCustomer = null;
+        ResponseEntity response = null;
+        try {
+            String hashPwd = passwordEncoder.encode(customer.getPwd()); //Realizando a encriptação da senha antes de salvar
+            customer.setPwd(hashPwd); //Setando a senha no objeto a ser salvo
+            savedCustomer = customerRepository.save(customer); //Salvando
+	    // ...
+```
 
 
