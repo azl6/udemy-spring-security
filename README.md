@@ -102,5 +102,55 @@ CREATE TABLE `customer` (
 INSERT INTO `customer` (`email`, `pwd`, `role`)
  VALUES ('johndoe@example.com', '54321', 'admin');
  ```
+ 
+ Após a criação da tabela personalizada, mapeamos a entidade desejada na JPA, e criamos o seu **repository**
+ 
+ ```java
+ @Entity
+public class Customer {
+
+    @Id
+    @GeneratedValue(strategy= GenerationType.AUTO,generator="native")
+    @GenericGenerator(name = "native",strategy = "native")
+    private int id;
+    private String email;
+    private String pwd;
+    private String role;
+ 
+    //getters and setters...
+ ```
+ 
+ Depois, criamos uma classe que extende de **UserDetailsService**, e sobreescrevemos o método **loadUserByUsername**
+ 
+ ```java
+ @Service
+public class EazyBankUserDetails implements UserDetailsService {
+
+    @Autowired
+    private CustomerRepository customerRepository;
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    
+        String userName, password = null;
+        List<GrantedAuthority> authorities = null;
+	
+        List<Customer> customer = customerRepository.findByEmail(username); //neste caso, o e-mail é o username.
+	
+        if (customer.size() == 0) {
+            throw new UsernameNotFoundException("User details not found for the user : " + username);
+        } else{
+            userName = customer.get(0).getEmail();
+            password = customer.get(0).getPwd();
+            authorities = new ArrayList<>();
+            authorities.add(new SimpleGrantedAuthority(customer.get(0).getRole()));
+        }
+	
+        return new User(username,password,authorities);
+    }
+}
+ ```
+ 
+ Após isso, utilizando as credenciais cadastradas anteriormente, poderemos acessar endpoints protegidos.
 
 
