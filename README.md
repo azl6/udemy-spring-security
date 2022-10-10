@@ -30,7 +30,7 @@ public PasswordEncoder passwordEncoder() {
 
 ### InMemoryUserDetailsManager
 
-Classe para gerenciamento de usuários em memória. O `PasswordEncoder`, neste caso, é passado como um @Bean, que o Spring utilizará sempre que necessário. 
+Classe para gerenciamento de usuários em memória. O `PasswordEncoder`, neste caso, é passado como um `@Bean`, que o Spring utilizará sempre que necessário. 
 
 **Exemplo:** 
 ```java
@@ -70,7 +70,7 @@ create table authorities (
 );
 ```
 
-Tendo o data source no app.properties apontando para um banco com as tabelas acima, basta criarmos os seguintes @Bean
+Tendo o data source no `app.properties` apontando para um banco com as tabelas acima, basta criarmos os seguintes `@Bean`
 
 ```java
 @Bean
@@ -155,13 +155,13 @@ public class EazyBankUserDetails implements UserDetailsService {
  
  Após isso, utilizando as credenciais cadastradas anteriormente, poderemos acessar endpoints protegidos.
  
- Para **registrar** novos usuários, basta criar um controller que recebe um @RequestBody de Customer (ou qualquer outro nome escolhido para a classe do usuário) e salvá-lo no banco. Pontos importantes:
+ Para **registrar** novos usuários, basta criar um controller que recebe um `@RequestBody` de **Customer** (ou qualquer outro nome escolhido para a classe do usuário) e salvá-lo no banco. Pontos importantes:
  
 - Os valores conhecidos do campo **role**, até o momento, são **admin** e **user**
 
 ![img](https://user-images.githubusercontent.com/80921933/194880715-1d1f9e07-6b2a-44bc-9170-4b231b02a77f.png)
 
-- Por padrão, **o Spring Security desativará requisições que podem fazer alterações no banco (POST/PUT)**. Isso é uma feature do CSRF. Como esse assunto ainda não fora abordado, **desativaremos esse recurso** na classe **SecurityFilterChain** 
+- Por padrão, **o Spring Security desativará requisições que podem fazer alterações no banco (POST/PUT)**. Isso é uma feature do `CSRF`. Como esse assunto ainda não fora abordado, **desativaremos esse recurso** na classe **SecurityFilterChain** 
 
 ```java
 @Configuration
@@ -181,12 +181,12 @@ public class ProjectSecurityConfig {
 
 ![image](https://user-images.githubusercontent.com/80921933/194893581-f0c0b114-49ef-435c-b5f8-f1a450c55804.png)
 
-A fim de armazenar senhas de forma segura no banco, podemos utilizar algumas implementações do PasswordEncoder. As mais conhecidas com encriptação hashing são:
+A fim de armazenar senhas de forma segura no banco, podemos utilizar algumas implementações do `PasswordEncoder`. As mais conhecidas com encriptação hashing são:
 - BCryptPasswordEncoder
 - SCryptPasswordEncoder
 - Argon2PasswordEncoder
 
-Neste exemplo, utilizaremos a BCryptPasswordEncoder. Para tal, devemos disponibilizar um @Bean de PasswordEncoder que retorna a implementação BCryptPasswordEncoder sempre que um PasswordEncoder for injetado
+Neste exemplo, utilizaremos a `BCryptPasswordEncoder`. Para tal, devemos disponibilizar um @Bean de `PasswordEncoder` que retorna a implementação `BCryptPasswordEncoder` sempre que um `PasswordEncoder` for injetado
 
 ```java
     @Bean
