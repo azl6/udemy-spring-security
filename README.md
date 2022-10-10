@@ -175,3 +175,8 @@ public class ProjectSecurityConfig {
     }
 ```
 
+## Gerenciamento de senhas com encode, encriptação e hashing
+
+![image](https://user-images.githubusercontent.com/80921933/194893581-f0c0b114-49ef-435c-b5f8-f1a450c55804.png)
+
+
