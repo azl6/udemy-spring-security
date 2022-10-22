@@ -265,6 +265,10 @@ public class EazyBankUsernamePwdAuthenticationProvider implements Authentication
 
 Para a testar a implementação, basta tentar acessar um endpoint protegido, e ter o usuário informado salvo no banco.
 
-**Importante**: A utilização deste método de autenticação diverge do UserDetailsService demonstrado acima. O UserDetailsService utilizaria o **DaoAuthenticationProvider** padrão, fornecido pelo Spring. Aqui, basicamente substituimos o DaoAuthenticationProvider.
+**Importante**: A utilização deste método de autenticação diverge do UserDetailsService demonstrado acima. O UserDetailsService utilizaria o **DaoAuthenticationProvider** padrão, fornecido pelo Spring. Aqui, basicamente substituimos o DaoAuthenticationProvider e o UserDetailsService, escrevendo a forma de autenticar-se em uma só classe.
+
+![superrrr](https://user-images.githubusercontent.com/80921933/197309987-28bded4a-b3ed-406a-bf13-c9bf7d0217e2.png)
+
+
 
 
