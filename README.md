@@ -269,14 +269,17 @@ Para a testar a implementação, basta tentar acessar um endpoint protegido, e t
 
 ![superrrr](https://user-images.githubusercontent.com/80921933/197309987-28bded4a-b3ed-406a-bf13-c9bf7d0217e2.png)
 
-## Cross-origin resource sharing
+## Cross-origin resource sharing (CORS)
 
-![image](https://user-images.githubusercontent.com/80921933/197357769-26a13f89-a3d6-4618-920c-879ecbbe89dd.png)
+![CORS1](https://user-images.githubusercontent.com/80921933/197358563-6342145a-94ce-468e-9bc9-7be9f1100e9f.png)
 
-![image](https://user-images.githubusercontent.com/80921933/197357786-a08e21e0-e4de-4c13-a0d6-3779d8f1663f.png)
+Para resolver o problema de CORS, podemos anotar os controllers com a annotation `@CrossOrigin` e específicar as origens permitidas, como é demonstrado abaixo:
 
-![image](https://user-images.githubusercontent.com/80921933/197357912-6d6f9f5a-95ff-4b94-a249-42a73c8d0037.png)
+![CORS2](https://user-images.githubusercontent.com/80921933/197358622-d4497e6a-bda5-4d76-b036-3139fdc9ce47.png)
 
+Entretanto, em um ambiente com muitos controllers, talvez haja a preferência de definir as configurações no `SecurityFilterChain`, como é demonstrado abaixo:
+
+![CORS3](https://user-images.githubusercontent.com/80921933/197358573-c4f6da23-657f-47f5-be1b-41b5162bd55a.png)
 
 
 
