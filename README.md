@@ -269,6 +269,15 @@ Para a testar a implementação, basta tentar acessar um endpoint protegido, e t
 
 ![superrrr](https://user-images.githubusercontent.com/80921933/197309987-28bded4a-b3ed-406a-bf13-c9bf7d0217e2.png)
 
+## Cross-origin resource sharing
+
+![image](https://user-images.githubusercontent.com/80921933/197357769-26a13f89-a3d6-4618-920c-879ecbbe89dd.png)
+
+![image](https://user-images.githubusercontent.com/80921933/197357786-a08e21e0-e4de-4c13-a0d6-3779d8f1663f.png)
+
+![image](https://user-images.githubusercontent.com/80921933/197357912-6d6f9f5a-95ff-4b94-a249-42a73c8d0037.png)
+
+
 
 
 
