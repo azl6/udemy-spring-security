@@ -186,7 +186,7 @@ A fim de armazenar senhas de forma segura no banco, podemos utilizar algumas imp
 - SCryptPasswordEncoder
 - Argon2PasswordEncoder
 
-Neste exemplo, utilizaremos a `BCryptPasswordEncoder`. Para tal, devemos disponibilizar um @Bean de `PasswordEncoder` que retorna a implementação `BCryptPasswordEncoder` sempre que um `PasswordEncoder` for injetado
+Neste exemplo, utilizaremos a `BCryptPasswordEncoder`. Para tal, devemos disponibilizar um `@Bean` de `PasswordEncoder` que retorna a implementação `BCryptPasswordEncoder` sempre que um `PasswordEncoder` for injetado
 
 ```java
     @Bean
@@ -217,5 +217,54 @@ public class LoginController {
             savedCustomer = customerRepository.save(customer); //Salvando
 	    // ...
 ```
+
+## Authentication providers
+
+Serve para determinarmos as regras de autenticação, além de determinarmos quais tipos de autenticação nosso serviço terá.
+
+O código abaixo exemplifica a criação de um **Authentication provider**
+
+```java
+@Component
+public class EazyBankUsernamePwdAuthenticationProvider implements AuthenticationProvider {
+
+    @Autowired
+    private CustomerRepository customerRepository; //Repo que mapeia a entidade cujo user e pwd serão usados na autenticação 
+
+    @Autowired
+    private PasswordEncoder passwordEncoder; //Encoder para verificar se a senha passada bate com a encodada no banco
+
+    @Override
+    public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+        String username = authentication.getName(); //Forma de pegar o username informado
+        String pwd = authentication.getCredentials().toString(); //Forma de pegar o pwd informado
+        List<Customer> customer = customerRepository.findByEmail(username);
+        if (customer.size() > 0) {
+            if (passwordEncoder.matches(pwd, customer.get(0).getPwd())) {
+                List<GrantedAuthority> authorities = new ArrayList<>();
+                authorities.add(new SimpleGrantedAuthority(customer.get(0).getRole()));
+                return new UsernamePasswordAuthenticationToken(username, pwd, authorities);
+            } else {
+                throw new BadCredentialsException("Invalid password!");
+            }
+        }else {
+            throw new BadCredentialsException("No user registered with this details!");
+        }
+    }
+
+    //Informando que quero utilizar a autenticação com username/password
+    //O retorno do método pode ser encontrado na classe DaoAuthenticationProvider
+    //O instrutor copiou para exemplificar a necessidade de implementarmos uma autenticação com user/pwd
+    @Override
+    public boolean supports(Class<?> authentication) {
+        return (UsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication));
+    }
+
+}
+```
+
+Para a testar a implementação, basta tentar acessar um endpoint protegido, e ter o usuário informado salvo no banco.
+
+**Importante**: A utilização deste método de autenticação diverge do UserDetailsService demonstrado acima. O UserDetailsService utilizaria o **DaoAuthenticationProvider** padrão, fornecido pelo Spring. Aqui, basicamente substituimos o DaoAuthenticationProvider.
 
 
