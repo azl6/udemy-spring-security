@@ -310,7 +310,6 @@ CREATE TABLE `customer` (
   PRIMARY KEY (`customer_id`)
 );
 ```
-<br>
 
 **(JPA)**
 
@@ -358,8 +357,6 @@ INSERT INTO `authorities` (`customer_id`, `name`)
    VALUES (1, 'VIEWBALANCE');
 ```
 
-<br>
-
 **(JPA)**
 
 ```java
@@ -380,6 +377,53 @@ public class Authority {
     
     //getters and setters
 ```
+
+Após os mapeamentos, podemos alterar/implementar o nosso AuthenticationProvider (explicado acima), para retornar um objeto do tipo `UsernamePasswordAuthenticationToken` com a lista de authorities vinculadas ao usuário autenticado, authorities essas que permitirão o posterior acesso do usuário a demais recursos do sistema.
+
+```java
+@Component
+public class EazyBankUsernamePwdAuthenticationProvider implements AuthenticationProvider {
+
+    @Autowired
+    private CustomerRepository customerRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Override
+    public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+        String username = authentication.getName();
+        String pwd = authentication.getCredentials().toString();
+        List<Customer> customer = customerRepository.findByEmail(username);
+        if (customer.size() > 0) {
+            if (passwordEncoder.matches(pwd, customer.get(0).getPwd())) {
+	    	//Se o usuário for válido, retorna um objeto com seu username, password e sua lista de authorities (c/ a função getGrantedAuthorities(...))
+                return new UsernamePasswordAuthenticationToken(username, pwd, getGrantedAuthorities(customer.get(0).getAuthorities()));
+            } else {
+                throw new BadCredentialsException("Invalid password!");
+            }
+        }else {
+            throw new BadCredentialsException("No user registered with this details!");
+        }
+    }
+
+    //Método para retornar uma lista de GrantedAuthority a partir das authorities concedidas ao usuário no banco
+    private List<GrantedAuthority> getGrantedAuthorities(Set<Authority> authorities) {
+        List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
+        for (Authority authority : authorities) {
+            grantedAuthorities.add(new SimpleGrantedAuthority(authority.getName()));
+        }
+        return grantedAuthorities;
+    }
+
+    @Override
+    public boolean supports(Class<?> authentication) {
+        return (UsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication));
+    }
+
+}
+```
+
 
 
 
