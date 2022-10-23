@@ -283,7 +283,7 @@ Entretanto, em um ambiente com muitos controllers, talvez haja a preferência de
 
 ## Autorização com Authorities e Roles
 
-Authorities são permissões concedidas a um usuário autenticado, Como por exemplo:
+Authorities são permissões concedidas a um usuário autenticado, como por exemplo:
 
 - READPURCHASES
 - READPURCHASEDETAILS
