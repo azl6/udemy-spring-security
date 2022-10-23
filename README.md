@@ -456,7 +456,64 @@ public class ProjectSecurityConfig {
         return http.build();
     }
 
-    @Bea
+```
+
+## Roles x Authorities
+
+![image](https://user-images.githubusercontent.com/80921933/197404066-18c3f2b7-f8b2-4a98-8b35-81e48252a5bc.png)
+
+Uma **role** pode ser usada para agrupar um conjunto de permissões a um usuário. Alguns exemplos de **role** são **ADMIN** ou **USER**.
+
+Para iniciar a implementação de **roles**, podemos seguir o mesmo princípio da tabela de **Authorities**, definida acima. Inserimos as roles de um usuário da mesma forma que inserimos as **Authorities**
+
+```sql
+INSERT INTO `authorities` (`customer_id`, `name`)
+  VALUES (1, 'ROLE_USER');
+
+ INSERT INTO `authorities` (`customer_id`, `name`)
+  VALUES (1, 'ROLE_ADMIN');
+```
+
+Após isso, configuramos o Bean de SecurityFilterChain para liberar endpoints por **role**
+
+**Importante:** No Bean, basta definirmos o nome que vem depois do prefixo **ROLE_**. O Spring já adicionará esse prefixo na verificação.
+
+```java
+@Configuration
+public class ProjectSecurityConfig {
+
+    @Bean
+    SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
+        http.cors().configurationSource(new CorsConfigurationSource() {
+            @Override
+            public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
+                CorsConfiguration config = new CorsConfiguration();
+                config.setAllowedOrigins(Collections.singletonList("http://localhost:4200"));
+                config.setAllowedMethods(Collections.singletonList("*"));
+                config.setAllowCredentials(true);
+                config.setAllowedHeaders(Collections.singletonList("*"));
+                config.setMaxAge(3600L);
+                return config;
+            }
+        }).and().csrf().ignoringAntMatchers("/contact","/register").csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                .and().authorizeRequests()
+                        .antMatchers("/myAccount").hasRole("USER") //Usuários com a role ROLE_USER podem acessar
+                        .antMatchers("/myBalance").hasAnyRole("USER","ADMIN") //Usuários com a role ROLE_USER ou ROLE_ADMIN podem acessar
+                        .antMatchers("/myLoans").hasRole("USER") //Usuários com a role ROLE_USER podem acessar
+                        .antMatchers("/myCards").hasRole("USER") //Usuários com a role ROLE_USER podem acessar
+                        .antMatchers("/user").authenticated()
+                        .antMatchers("/notices","/contact","/register").permitAll()
+                .and().formLogin()
+                .and().httpBasic();
+        return http.build();
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+}
 ```
 
 
