@@ -358,6 +358,8 @@ INSERT INTO `authorities` (`customer_id`, `name`)
    VALUES (1, 'VIEWBALANCE');
 ```
 
+<br>
+
 **(JPA)**
 
 ```java
