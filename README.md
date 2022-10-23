@@ -534,7 +534,7 @@ Podemos incluir novos filtros, devendo implementar a interface `Filter` e sobree
 
 Para incluir um filtro antes do `BasicAuthenticationFilter`, devemos:
 
-- Implementar o filtro em uma classe que implementa a interface `Filter` (Aula 76)
+**Implementar o filtro em uma classe que implementa a interface `Filter` (Aula 76)**
 
 ```java
 public class RequestValidationBeforeFilter  implements Filter {
@@ -575,13 +575,45 @@ public class RequestValidationBeforeFilter  implements Filter {
 }
 ```
 
-- Declarar o filtro construído no Bean de `SecurityFilterChain`
+**Declarar o filtro construído no Bean de `SecurityFilterChain`**
 
 ```java
 // ...
 .and().addFilterBefore(new RequestValidationBeforeFilter(), BasicAuthenticationFilter.class)
 // ...
 ```
+
+Outro caso simples da implementação de filtros: Filtro após o `BasicAuthenticationFilter` para printar as authorities do usuário logado:
+
+**Filtro:**
+```java
+public class AuthoritiesLoggingAfterFilter implements Filter {
+
+    private final Logger LOG =
+            Logger.getLogger(AuthoritiesLoggingAfterFilter.class.getName());
+
+    @Override
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+            throws IOException, ServletException {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (null != authentication) {
+            LOG.info("User " + authentication.getName() + " is successfully authenticated and "
+                    + "has the authorities " + authentication.getAuthorities().toString());
+        }
+        chain.doFilter(request, response);
+    }
+}
+```
+
+**Adicionando-o ao Bean do `SecurityFilterChain`:**
+```java
+// ...
+.addFilterAfter(new AuthoritiesLoggingAfterFilter(), BasicAuthenticationFilter.class)
+// ...
+```
+
+
 
 
 
