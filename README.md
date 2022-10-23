@@ -516,6 +516,72 @@ public class ProjectSecurityConfig {
 }
 ```
 
+## Authentication filters
+
+Os filtros são a primeira camada executada quando um usuário tenta logar no sistema.
+
+Para visualizar os filtros em funcionamento, podemos inserir a seguinte configuração no application.properties
+
+```
+logging.level.org.springframework.security.web.FilterChainProxy=DEBUG
+```
+
+Os filtros serão mostrados da seguinte forma no terminal (após a tentativa de login):
+
+![filtros](https://user-images.githubusercontent.com/80921933/197417447-dc896d06-5897-49ec-bea4-1f9bc49afd3a.png)
+
+Podemos incluir novos filtros, devendo implementar a interface `Filter` e sobreescrever o método `doFilter()`
+
+Para incluir um filtro antes do `BasicAuthenticationFilter`, devemos:
+
+- Implementar o filtro em uma classe que implementa a interface `Filter` (Aula 76)
+
+```java
+public class RequestValidationBeforeFilter  implements Filter {
+
+    public static final String AUTHENTICATION_SCHEME_BASIC = "Basic";
+    private Charset credentialsCharset = StandardCharsets.UTF_8;
+
+    @Override
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+            throws IOException, ServletException {
+        HttpServletRequest req = (HttpServletRequest) request;
+        HttpServletResponse res = (HttpServletResponse) response;
+        String header = req.getHeader(AUTHORIZATION);
+        if (header != null) {
+            header = header.trim();
+            if (StringUtils.startsWithIgnoreCase(header, AUTHENTICATION_SCHEME_BASIC)) {
+                byte[] base64Token = header.substring(6).getBytes(StandardCharsets.UTF_8);
+                byte[] decoded;
+                try {
+                    decoded = Base64.getDecoder().decode(base64Token);
+                    String token = new String(decoded, credentialsCharset);
+                    int delim = token.indexOf(":");
+                    if (delim == -1) {
+                        throw new BadCredentialsException("Invalid basic authentication token");
+                    }
+                    String email = token.substring(0, delim);
+                    if (email.toLowerCase().contains("test")) {
+                        res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                        return;
+                    }
+                } catch (IllegalArgumentException e) {
+                    throw new BadCredentialsException("Failed to decode basic authentication token");
+                }
+            }
+        }
+        chain.doFilter(request, response);
+    }
+}
+```
+
+- Declarar o filtro construído no Bean de `SecurityFilterChain`
+
+```java
+// ...
+.and().addFilterBefore(new RequestValidationBeforeFilter(), BasicAuthenticationFilter.class)
+// ...
+```
 
 
 
