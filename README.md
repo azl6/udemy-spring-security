@@ -378,7 +378,7 @@ public class Authority {
     //getters and setters
 ```
 
-Após os mapeamentos, podemos alterar/implementar o nosso AuthenticationProvider (explicado acima), para retornar um objeto do tipo `UsernamePasswordAuthenticationToken` com a lista de authorities vinculadas ao usuário autenticado, authorities essas que permitirão o posterior acesso do usuário a demais recursos do sistema.
+Após os mapeamentos, podemos alterar/implementar o nosso `AuthenticationProvider` (explicado acima), para retornar um objeto do tipo `UsernamePasswordAuthenticationToken` com a lista de authorities vinculadas ao usuário autenticado, authorities essas que permitirão o posterior acesso do usuário a demais recursos do sistema.
 
 ```java
 @Component
@@ -422,6 +422,41 @@ public class EazyBankUsernamePwdAuthenticationProvider implements Authentication
     }
 
 }
+```
+
+No Bean do `SecurityFilterChain`, podemos limitar o acesso aos endpoints com authorities da seguinte forma:
+
+```java
+@Configuration
+public class ProjectSecurityConfig {
+
+    @Bean
+    SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
+        http.cors().configurationSource(new CorsConfigurationSource() {
+            @Override
+            public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
+                CorsConfiguration config = new CorsConfiguration();
+                config.setAllowedOrigins(Collections.singletonList("http://localhost:4200"));
+                config.setAllowedMethods(Collections.singletonList("*"));
+                config.setAllowCredentials(true);
+                config.setAllowedHeaders(Collections.singletonList("*"));
+                config.setMaxAge(3600L);
+                return config;
+            }
+        }).and().csrf().ignoringAntMatchers("/contact","/register").csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                .and().authorizeRequests()
+                        .antMatchers("/myAccount").hasAuthority("VIEWACCOUNT") //Authority necessária para acessar o endpoint /myAccount
+                        .antMatchers("/myBalance").hasAnyAuthority("VIEWACCOUNT","VIEWBALANCE") //Authority necessária para acessar o endpoint /myBalance
+                        .antMatchers("/myLoans").hasAuthority("VIEWLOANS") //Authority necessária para acessar o endpoint /myLoans
+                        .antMatchers("/myCards").hasAuthority("VIEWCARDS") //Authority necessária para acessar o endpoint /myCards
+                        .antMatchers("/user").authenticated()
+                        .antMatchers("/notices","/contact","/register").permitAll()
+                .and().formLogin()
+                .and().httpBasic();
+        return http.build();
+    }
+
+    @Bea
 ```
 
 
