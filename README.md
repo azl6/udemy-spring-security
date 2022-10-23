@@ -613,6 +613,21 @@ public class AuthoritiesLoggingAfterFilter implements Filter {
 // ...
 ```
 
+## JWT Tokens
+
+![jwt](https://user-images.githubusercontent.com/80921933/197424210-dc0d7228-ed00-43c2-b408-35cf11efac13.png)
+
+O header do token armazena metadados, como o algorítmo que foi usado em seu encode
+
+![jwt](https://user-images.githubusercontent.com/80921933/197424333-be2b0bf4-bf4a-4c48-aeae-47ce1a05c98e.png)
+
+O body do token armazena o payload, que podem ser as informações do usuário, tempo de expiração do token, quem gerou o token, etc...
+
+![jwt](https://user-images.githubusercontent.com/80921933/197424391-628d230a-de67-4b62-9d0f-3b8e60cb7655.png)
+
+
+
+
 
 
 
