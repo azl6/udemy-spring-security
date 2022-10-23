@@ -281,6 +281,108 @@ Entretanto, em um ambiente com muitos controllers, talvez haja a preferência de
 
 ![CORS3](https://user-images.githubusercontent.com/80921933/197358573-c4f6da23-657f-47f5-be1b-41b5162bd55a.png)
 
+## Autorização com Authorities e Roles
+
+Authorities são permissões concedidas a um usuário autenticado, Como por exemplo:
+
+- READPURCHASES
+- READPURCHASEDETAILS
+- READACCOUNTDETAILS
+- READALLCUSTOMERS
+
+A relação USUARIO-AUTHORITY é `One to Many` (ou `Many to Many`, dependendo da implementação), o que significa que um cliente com o perfil de **USUÁRIO** poderia ter as authorities **READPURCHASES**, **READPURCHASEDETAILS** e **READACCOUNTDETAILS**, mas não a authority **READALLCUSTOMERS**, que seria voltada para o perfil de **ADMINISTRADOR**. 
+
+Para uma implementação inicial de authorities, criamos 2 tabelas e mapeamos-as na JPA:
+
+**Tabela do usuário**
+
+**(SQL)**
+
+```sql
+CREATE TABLE `customer` (
+  `customer_id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `mobile_number` varchar(20) NOT NULL,
+  `pwd` varchar(500) NOT NULL,
+  `role` varchar(100) NOT NULL,
+  `create_dt` date DEFAULT NULL,
+  PRIMARY KEY (`customer_id`)
+);
+```
+<br>
+
+**(JPA)**
+
+```java
+@Entity
+@Table(name = "customer")
+public class Customer {
+
+    //demais atributos...
+
+    @JsonIgnore
+    @OneToMany(mappedBy="customer",fetch=FetchType.EAGER)
+    private Set<Authority> authorities;
+    
+    //getters and setters
+```
+
+<br>
+<br>
+
+**Tabela das authorities, que tem uma chave estrangeira referenciando o ID do usuário**
+
+**(SQL)**
+
+```sql
+CREATE TABLE `authorities` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `customer_id` int NOT NULL,
+  `name` varchar(50) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `customer_id` (`customer_id`),
+  CONSTRAINT `authorities_ibfk_1` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`customer_id`)
+);
+
+INSERT INTO `authorities` (`customer_id`, `name`)
+ VALUES (1, 'VIEWACCOUNT');
+
+INSERT INTO `authorities` (`customer_id`, `name`)
+ VALUES (1, 'VIEWCARDS');
+
+ INSERT INTO `authorities` (`customer_id`, `name`)
+  VALUES (1, 'VIEWLOANS');
+
+ INSERT INTO `authorities` (`customer_id`, `name`)
+   VALUES (1, 'VIEWBALANCE');
+```
+
+**(JPA)**
+
+```java
+@Entity
+@Table(name = "authorities")
+public class Authority {
+
+    @Id
+    @GeneratedValue(strategy= GenerationType.AUTO,generator="native")
+    @GenericGenerator(name = "native",strategy = "native")
+    private Long id;
+
+    private String name;
+
+    @ManyToOne
+    @JoinColumn(name = "customer_id")
+    private Customer customer;
+    
+    //getters and setters
+```
+
+
+
+
+
 
 
 
