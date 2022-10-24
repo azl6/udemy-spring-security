@@ -703,6 +703,52 @@ Além disso, também devemos expor o header **Authorization** dentro das configu
 	//...
 ```
 
+Após isso, precisamos criar o `Filter` para gerar o token JWT **após o filtro de autenticação** 
+
+```java
+public class JWTTokenGeneratorFilter extends OncePerRequestFilter {
+
+    @Override
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws ServletException, IOException {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (null != authentication) {
+            SecretKey key = Keys.hmacShaKeyFor(SecurityConstants.JWT_KEY.getBytes(StandardCharsets.UTF_8));
+            String jwt = Jwts.builder().setIssuer("Eazy Bank").setSubject("JWT Token")
+                    .claim("username", authentication.getName())
+                    .claim("authorities", populateAuthorities(authentication.getAuthorities()))
+                    .setIssuedAt(new Date())
+                    .setExpiration(new Date((new Date()).getTime() + 30000000))
+                    .signWith(key).compact();
+            response.setHeader(SecurityConstants.JWT_HEADER, jwt);
+        }
+
+        filterChain.doFilter(request, response);
+    }
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        return !request.getServletPath().equals("/user");
+    }
+
+    private String populateAuthorities(Collection<? extends GrantedAuthority> collection) {
+        Set<String> authoritiesSet = new HashSet<>();
+        for (GrantedAuthority authority : collection) {
+            authoritiesSet.add(authority.getAuthority());
+        }
+        return String.join(",", authoritiesSet);
+    }
+}
+```
+
+Declarando o filtro no Bean do `SecurityFilterChain`:
+
+```java
+// ...
+.addFilterAfter(new JWTTokenGeneratorFilter(), BasicAuthenticationFilter.class)
+// ...
+```
+
 
 
 
