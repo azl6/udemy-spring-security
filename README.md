@@ -10,6 +10,7 @@
 - [Roles x Authorities](#roles-x-authorities)
 - [Authentication filters](#authentication-filters)
 - [JWT Tokens](#jwt-tokens)
+- [Projeto 1](#projeto-1)
 
 
 # Informações gerais
@@ -795,6 +796,16 @@ public class JWTTokenValidatorFilter  extends OncePerRequestFilter {
 .addFilterBefore(new JWTTokenValidatorFilter(), BasicAuthenticationFilter.class)
 // ...
 ```
+
+# Projeto 1
+
+Ao finalizar a sessão de JWT, tentei realizar uma implementação, que falhou.
+
+Sendo assim, usei os vídeos do Nélio Alves para realizar a implementação abaixo.
+
+Passo a passo:
+
+- A implementação do `SecurityFilterChain` ao invés da `WebMvcConfigurerAdapter` pode ser mantida, com seus antMatchers e configurações de CORS e CSRF.
 
 
 
