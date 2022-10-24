@@ -1,3 +1,15 @@
+- [Informações gerais](#informações-gerais)
+- [Liberação de endpoints básica](#liberação-de-endpoints-básica)
+- [Criando múltiplos usuários autenticáveis](#criando-múltiplos-usuários-autenticáveis)
+- [Gerenciamento de senhas com encode, encriptação e hashing](#gerenciamento-de-senhas-com-encode-encriptação-e-hashing)
+- [Authentication providers](#authentication-providers)
+- [Cross origin resource sharing](#cross-origin-resource-sharing)
+- [Autorização com Authorities e Roles](#autorização-com-authorities-e-roles)
+- [Roles x Authorities](#roles-x-authorities)
+- [Authentication filters](#authentication-filters)
+- [JWT Tokens](#jwt-tokens)
+
+
 # Informações gerais
 `JSESSIONID:` Cookie gerado pelo Spring Security. Permite que façamos múltiplos requests com as nossas credenciais. <br>
 ![flow](https://user-images.githubusercontent.com/80921933/194652133-4a70471f-c76d-4f86-ad36-0684d3244189.png) <br>
@@ -269,7 +281,7 @@ Para a testar a implementação, basta tentar acessar um endpoint protegido, e t
 
 ![superrrr](https://user-images.githubusercontent.com/80921933/197309987-28bded4a-b3ed-406a-bf13-c9bf7d0217e2.png)
 
-# Cross-origin resource sharing (CORS)
+# Cross origin resource sharing
 
 ![CORS1](https://user-images.githubusercontent.com/80921933/197358563-6342145a-94ce-468e-9bc9-7be9f1100e9f.png)
 
