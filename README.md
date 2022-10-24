@@ -651,6 +651,58 @@ A `signature` pode ser compreendida abaixo:
 
 ![image](https://user-images.githubusercontent.com/80921933/197425096-630e1c42-2fa7-479b-8514-0ac4b4a77854.png)
 
+Para iniciarmos a implementação de tokens JWT, devemos adicionar as seguintes dependencies ao POM:
+
+```xml
+<dependency>
+	<groupId>io.jsonwebtoken</groupId>
+	<artifactId>jjwt-api</artifactId>
+	<version>0.11.5</version>
+</dependency>
+<dependency>
+	<groupId>io.jsonwebtoken</groupId>
+	<artifactId>jjwt-impl</artifactId>
+	<version>0.11.5</version>
+	<scope>runtime</scope>
+</dependency>
+<dependency>
+	<groupId>io.jsonwebtoken</groupId>
+	<artifactId>jjwt-jackson</artifactId> <!-- or jjwt-gson if Gson is preferred -->
+	<version>0.11.5</version>
+	<scope>runtime</scope>
+</dependency>
+```
+
+Após isso, desativamos a geração automática de tokens do tipo `JSESSIONID`, adicionando a seguinte linha em nosso Bean de `SecurityFilterChain`:
+
+```java
+// ...
+http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+// ...
+```
+
+Além disso, também devemos expor o header **Authorization** dentro das configurações de `CORS` no Bean de `SecurityFilterChain`:
+
+```java
+ @Bean
+    SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
+        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+            .cors().configurationSource(new CorsConfigurationSource() {
+            @Override
+            public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
+                CorsConfiguration config = new CorsConfiguration();
+                config.setAllowedOrigins(Collections.singletonList("http://localhost:4200"));
+                config.setAllowedMethods(Collections.singletonList("*"));
+                config.setAllowCredentials(true);
+                config.setAllowedHeaders(Collections.singletonList("*"));
+                config.setExposedHeaders(Arrays.asList("Authorization")); //Configuração adicional necessária
+                config.setMaxAge(3600L);
+                return config;
+            }
+        }).and()
+	//...
+```
+
 
 
 
