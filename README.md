@@ -1,15 +1,15 @@
-## Informações gerais
+# Informações gerais
 `JSESSIONID:` Cookie gerado pelo Spring Security. Permite que façamos múltiplos requests com as nossas credenciais. <br>
 ![flow](https://user-images.githubusercontent.com/80921933/194652133-4a70471f-c76d-4f86-ad36-0684d3244189.png) <br>
 
 `Security Context:` Interface que armazena os dados do usuário autenticado. <br>
 
-## Liberação de endpoints básica
+# Liberação de endpoints básica
 Com a depreciação da classe `WebSecurityConfigurerAdapter`, podemos utilizar a `SecurityFilterChain` como alternativa para configurações de liberação de endpoints.<br>
 
 <a href="https://github.com/azl6/eazybytes-spring-security/blob/main/section2/springsecsection2/src/main/java/com/eazybytes/config/ProjectSecurityConfig.java" target="_blank">Exemplo de utilização do SecurityFilterChain</a>
 
-## Criando múltiplos usuários autenticáveis
+# Criando múltiplos usuários autenticáveis
 
 ![img](https://user-images.githubusercontent.com/80921933/194680566-736ffd24-236b-4eb4-b3da-0498eee9006e.png)
 
@@ -177,7 +177,7 @@ public class ProjectSecurityConfig {
     }
 ```
 
-## Gerenciamento de senhas com encode, encriptação e hashing
+# Gerenciamento de senhas com encode, encriptação e hashing
 
 ![image](https://user-images.githubusercontent.com/80921933/194893581-f0c0b114-49ef-435c-b5f8-f1a450c55804.png)
 
@@ -218,7 +218,7 @@ public class LoginController {
 	    // ...
 ```
 
-## Authentication providers
+# Authentication providers
 
 Serve para determinarmos as regras de autenticação, além de determinarmos quais tipos de autenticação nosso serviço terá.
 
@@ -269,7 +269,7 @@ Para a testar a implementação, basta tentar acessar um endpoint protegido, e t
 
 ![superrrr](https://user-images.githubusercontent.com/80921933/197309987-28bded4a-b3ed-406a-bf13-c9bf7d0217e2.png)
 
-## Cross-origin resource sharing (CORS)
+# Cross-origin resource sharing (CORS)
 
 ![CORS1](https://user-images.githubusercontent.com/80921933/197358563-6342145a-94ce-468e-9bc9-7be9f1100e9f.png)
 
@@ -281,7 +281,7 @@ Entretanto, em um ambiente com muitos controllers, talvez haja a preferência de
 
 ![CORS3](https://user-images.githubusercontent.com/80921933/197358573-c4f6da23-657f-47f5-be1b-41b5162bd55a.png)
 
-## Autorização com Authorities e Roles
+# Autorização com Authorities e Roles
 
 Authorities são permissões concedidas a um usuário autenticado, como por exemplo:
 
@@ -458,7 +458,7 @@ public class ProjectSecurityConfig {
 
 ```
 
-## Roles x Authorities
+# Roles x Authorities
 
 ![image](https://user-images.githubusercontent.com/80921933/197404066-18c3f2b7-f8b2-4a98-8b35-81e48252a5bc.png)
 
@@ -516,7 +516,7 @@ public class ProjectSecurityConfig {
 }
 ```
 
-## Authentication filters
+# Authentication filters
 
 Os filtros são a primeira camada executada quando um usuário tenta logar no sistema.
 
@@ -613,17 +613,30 @@ public class AuthoritiesLoggingAfterFilter implements Filter {
 // ...
 ```
 
-## JWT Tokens
+# JWT Tokens
+
+Um token JWT é constituido de 3 partes:
+
+- Header
+- Payload
+- Signature
 
 ![jwt](https://user-images.githubusercontent.com/80921933/197424210-dc0d7228-ed00-43c2-b408-35cf11efac13.png)
 
-O header do token armazena metadados, como o algorítmo que foi usado em seu encode
+O `header` do token armazena metadados, como o algorítmo que foi usado em seu encode
 
 ![jwt](https://user-images.githubusercontent.com/80921933/197424333-be2b0bf4-bf4a-4c48-aeae-47ce1a05c98e.png)
 
-O body do token armazena o payload, que podem ser as informações do usuário, tempo de expiração do token, quem gerou o token, etc...
+O `payload` do token armazena as informações do usuário, tempo de expiração do token, quem gerou o token, etc...
 
 ![jwt](https://user-images.githubusercontent.com/80921933/197424391-628d230a-de67-4b62-9d0f-3b8e60cb7655.png)
+
+A `signature` pode ser compreendida abaixo:
+
+![image](https://user-images.githubusercontent.com/80921933/197424847-6b0b23bf-3e16-4684-8a60-fb6f9a3b65f6.png)
+
+![image](https://user-images.githubusercontent.com/80921933/197425096-630e1c42-2fa7-479b-8514-0ac4b4a77854.png)
+
 
 
 
