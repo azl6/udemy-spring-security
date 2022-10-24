@@ -540,6 +540,8 @@ Para visualizar os filtros em funcionamento, podemos inserir a seguinte configur
 logging.level.org.springframework.security.web.FilterChainProxy=DEBUG
 ```
 
+Além disso, devemos inserir a annotation `EnableWebSecurity(debug = true)` na classe principal.
+
 Os filtros serão mostrados da seguinte forma no terminal (após a tentativa de login):
 
 ![filtros](https://user-images.githubusercontent.com/80921933/197417447-dc896d06-5897-49ec-bea4-1f9bc49afd3a.png)
