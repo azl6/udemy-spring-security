@@ -809,6 +809,45 @@ Passo a passo:
 - Devemos mapear uma classe de usuário do banco da mesma forma, e formular uma lógica para recuperar os perfis (ou authorities) desse cliente. No curso do **Eazy Bytes**, foi utilizada 1 usuário...N perfis. Já o professor Nélio Alves utilizou uma implementação diferente (aula 71). Deve-se escolher uma das implementações.
 - Criar classe que implementa `UserDetails` (UserSS no repositório cursomc). Ela deve ter id, email (username), senha e uma lista de GrantedAuthorities
 - Criar classe que implementa `UserDetailsService`, e sobreescrever o método **loadUserByUsername(String username)**. O usuário será carregado injetando o repositório da classe que mapeia a tabela de usuário no banco. Após confirmarmos que o usuário existe, retornamos um **new UserSS(...)**, passando o id, username, password e a list de authorities (ou perfis) para o construtor. (12MIN)
+- Sobreescrever o método configure na classe de SecurityConfig da seguinte maneira: (**Validar esse passo! Será necessário mesmo?**)
+
+```java
+    @Override
+    public void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(userDetailsService).passwordEncoder(bCryptPasswordEncoder());
+    }
+```
+
+- Criar uma classe chamada **Credenciais** com os atributos **email** e **senha**
+- Criar as seguintes variáveis no application.properties
+
+```java
+jwt.secret=SequenciaDeCaracteresParaAssinarToken //sequencia que será embaralhada juntamente ao token JWT
+jwt.expiration=86400000
+```
+
+- Criar a classe **JWTUtil**, com o método **generateToken(...)**
+
+```java
+@Component
+public class JWTUtil {
+
+    @Value("${jwt.secret}")
+    private String secret;
+
+    @Value("${jwt.expiration}")
+    private Long expiration;
+
+    public String generateToken(String username){
+        return Jwts.builder()
+                .setSubject(username)
+                .setExpiration(new Date(System.currentTimeMillis() + expiration))
+                .signWith(SignatureAlgorithm.HS512, secret.getBytes())
+                .compact();
+    }
+}
+
+```
 
 
 
