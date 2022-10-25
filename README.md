@@ -801,12 +801,12 @@ public class JWTTokenValidatorFilter  extends OncePerRequestFilter {
 
 Ao finalizar a sessão de JWT, tentei realizar uma implementação, que falhou.
 
-Sendo assim, usei os vídeos do Nélio Alves para realizar a implementação abaixo.
+Sendo assim, usei os vídeos do **Nélio Alves** para realizar a implementação abaixo.
 
 Passo a passo:
 
 - A implementação do `SecurityFilterChain` ao invés da `WebMvcConfigurerAdapter` pode ser mantida, com seus antMatchers e configurações de CORS e CSRF.
-
+- Devemos mapear uma classe de usuário do banco da mesma forma, e formular uma lógica para recuperar os perfis (ou authorities) desse cliente. No curso do **Eazy Bytes**, foi utilizada 1 usuário...N perfis. Já o professor Nélio Alves utilizou uma implementação diferente (aula 71). Deve-se escolher uma das implementações.
 
 
 
