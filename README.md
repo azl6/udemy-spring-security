@@ -808,7 +808,7 @@ Passo a passo:
 - A implementação do `SecurityFilterChain` ao invés da `WebMvcConfigurerAdapter` pode ser mantida, com seus antMatchers e configurações de CORS e CSRF.
 - Devemos mapear uma classe de usuário do banco da mesma forma, e formular uma lógica para recuperar os perfis (ou authorities) desse cliente. No curso do **Eazy Bytes**, foi utilizada 1 usuário...N perfis. Já o professor Nélio Alves utilizou uma implementação diferente (aula 71). Deve-se escolher uma das implementações.
 - Criar classe que implementa `UserDetails` (UserSS no repositório cursomc). Ela deve ter id, email (username), senha e uma lista de GrantedAuthorities
-- Criar classe que implementa `UserDetailsService`, e sobreescrever o método **loadUserByUsername(String username)**. O usuário será carregado injetando o repositório da classe que mapeia a tabela de usuário no banco (PAREI 12:00!)
+- Criar classe que implementa `UserDetailsService`, e sobreescrever o método **loadUserByUsername(String username)**. O usuário será carregado injetando o repositório da classe que mapeia a tabela de usuário no banco. Após confirmarmos que o usuário existe, retornamos um **new UserSS(...)**, passando o id, username, password e a List<Authorities> para o construtor. (12MIN)
 
 
 
