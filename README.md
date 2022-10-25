@@ -847,6 +847,15 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 ```
 
 - Criar uma classe chamada **Credenciais** com os atributos **email** e **senha**
+
+```java
+public class Credenciais {
+
+    private String email;
+    private String senha;
+}
+```
+
 - Criar as seguintes variáveis no application.properties
 
 ```java
