@@ -822,6 +822,21 @@ public class UsuarioSS implements UserDetails {
 
 - Criar classe que implementa `UserDetailsService`, e sobreescrever o método **loadUserByUsername(String username)**. O usuário será carregado injetando o repositório da classe que mapeia a tabela de usuário no banco. Após confirmarmos que o usuário existe, retornamos um **new UserSS(...)**, passando o id, username, password e a list de authorities (ou perfis) para o construtor.
 
+```java
+public class UserDetailsServiceImpl implements UserDetailsService {
+
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+
+    @Override
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        Usuario usuario = usuarioRepository.findByEmail(email).orElseThrow(() -> new ObjectNotFoundException(1, ""));
+
+        return new UsuarioSS(usuario.getCdUsuario(), usuario.getEmail(), usuario.getSenha(), usuario.getGrantedAuthorities());
+    }
+}
+```
+
 - Sobreescrever o método configure na classe de SecurityConfig da seguinte maneira: (**Validar esse passo! Será necessário mesmo?**)
 
 ```java
