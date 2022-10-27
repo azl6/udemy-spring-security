@@ -938,7 +938,7 @@ http.addFilter(new JWTAuthenticationFilter(authenticationManager(), jwtUtil));
 
 - Para autorizar os usuário, criamos a classe **JWTAuthorizationFilter**, que extende de **BasicAuthenticationFilter**
 
-```
+```java
 public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 
     private JWTUtil jwtUtil;
