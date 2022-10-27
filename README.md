@@ -930,11 +930,54 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     }
 ```
 
-- Depois disso, basta registrar o filtro no SecurityFilterChain.
+- Depois disso, registrar o filtro no SecurityFilterChain.
 
 ```java
 http.addFilter(new JWTAuthenticationFilter(authenticationManager(), jwtUtil));
 ```
+
+- Para autorizar os usuário, criamos a classe **JWTAuthorizationFilter**, que extende de **BasicAuthenticationFilter**
+
+```
+public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
+
+    private JWTUtil jwtUtil;
+
+    private UserDetailsService userDetailsService;
+
+    public JWTAuthorizationFilter(AuthenticationManager authenticationManager, JWTUtil jwtUtil, UserDetailsService userDetailsService) {
+        super(authenticationManager);
+        this.jwtUtil = jwtUtil;
+        this.userDetailsService = userDetailsService;
+    }
+
+    @Override
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain chain) throws IOException, ServletException {
+
+        String header = request.getHeader("Authorization");
+        if (header != null && header.startsWith("Bearer ")) {
+            UsernamePasswordAuthenticationToken auth = getAuthentication(header.substring(7));
+            if (auth != null) {
+                SecurityContextHolder.getContext().setAuthentication(auth);
+            }
+        }
+        chain.doFilter(request, response);
+    }
+
+    private UsernamePasswordAuthenticationToken getAuthentication(String token) {
+        if (jwtUtil.tokenValido(token)) {
+            String username = jwtUtil.getUsername(token);
+            UserDetails user = userDetailsService.loadUserByUsername(username);
+            return new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+        }
+        return null;
+    }
+}
+```
+
+- Criar os métodos **tokenValido(...)** e **getUsername(...)** na classe JWTUtil
 
 
 
