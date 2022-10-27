@@ -805,8 +805,88 @@ Sendo assim, usei os vídeos do **Nélio Alves** para realizar a implementação
 
 Passo a passo:
 
-- A implementação do `SecurityFilterChain` ao invés da `WebMvcConfigurerAdapter` pode ser mantida, com seus antMatchers e configurações de CORS e CSRF.
-- Devemos mapear uma classe de usuário do banco da mesma forma, e formular uma lógica para recuperar os perfis (ou authorities) desse cliente. No curso do **Eazy Bytes**, foi utilizada 1 usuário...N perfis. Já o professor Nélio Alves utilizou uma implementação diferente (aula 71). Deve-se escolher uma das implementações.
+- A implementação do `SecurityFilterChain` não poderá ser mantida. Mesmo deprecated, utilizei a seguinte classe-base no SecurityConfig:
+
+```java
+@Configuration
+@EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+
+
+        http.cors().and().csrf().disable();
+        http.authorizeRequests()
+                .antMatchers("/publico").permitAll()
+                .anyRequest().authenticated();
+
+        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+    }
+
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+
+        CorsConfiguration configuration = new CorsConfiguration().applyPermitDefaultValues();
+        configuration.setAllowedMethods(Arrays.asList("POST", "GET", "PUT", "DELETE", "OPTIONS"));
+        final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
+
+    @Bean
+    public BCryptPasswordEncoder bCryptPasswordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+}
+```
+
+- Devemos mapear uma classe de usuário do banco, e formular uma lógica para recuperar os perfis (ou authorities) desse cliente. Nesta implementação, utilizei 1 usuário ... N authorities. O mapeamento na JPA ficou assim:
+
+Classe **Usuario**
+```java
+@Entity
+@Table(name = "usuario")
+@Data
+public class Usuario {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "cd_usuario")
+    private Long cdUsuario;
+
+    @Column(name = "email")
+    private String email;
+
+    @Column(name = "senha")
+    private String senha;
+
+    @OneToMany(mappedBy = "usuario", fetch = FetchType.EAGER)
+    private List<Authority> dbAuthorities;
+```
+
+Classe **Authority**
+```java
+@Entity
+@Data
+@Table(name = "authority")
+public class Authority {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "cd_authority")
+    private Integer cdAuthority;
+
+    @Column(name = "nome_authority")
+    private String nomeAuthority;
+
+    @ManyToOne
+    @JoinColumn(name = "rf_usuario")
+    private Usuario usuario;
+}
+```
+
 - Criar classe que implementa `UserDetails` (UserSS no repositório cursomc). Ela deve ter id, email (username), senha e uma lista de GrantedAuthorities
 
 ```java
@@ -837,7 +917,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 }
 ```
 
-- Sobreescrever o método configure na classe de SecurityConfig da seguinte maneira: (**Validar esse passo! Será necessário mesmo?**)
+- Sobreescrever o método configure na classe de SecurityConfig da seguinte maneira:
 
 ```java
     @Override
@@ -860,7 +940,7 @@ public class Credenciais {
 
 ```java
 jwt.secret=SequenciaDeCaracteresParaAssinarToken //sequencia que será embaralhada juntamente ao token JWT
-jwt.expiration=86400000
+jwt.expiration=60000 #1min
 ```
 
 - Criar a classe **JWTUtil**, com o método **generateToken(...)**
@@ -930,12 +1010,6 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     }
 ```
 
-- Depois disso, registrar o filtro no SecurityFilterChain.
-
-```java
-http.addFilter(new JWTAuthenticationFilter(authenticationManager(), jwtUtil));
-```
-
 - Para autorizar os usuário, criamos a classe **JWTAuthorizationFilter**, que extende de **BasicAuthenticationFilter**
 
 ```java
@@ -977,25 +1051,10 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 }
 ```
 
-- Criar os métodos **tokenValido(...)**, **getClaims** e **getUsername(...)** na classe JWTUtil
+- Criar os métodos **tokenValido(...)**, **getUsername** e **getClaims(...)** na classe JWTUtil
 
 ```java
-@Component
-public class JWTUtil {
-
-    @Value("${jwt.secret}")
-    private String secret;
-
-    @Value("${jwt.expiration}")
-    private Long expiration;
-
-    public String generateToken(String username){
-        return Jwts.builder()
-                .setSubject(username)
-                .setExpiration(new Date(System.currentTimeMillis() + expiration))
-                .signWith(SignatureAlgorithm.HS512, secret.getBytes())
-                .compact();
-    }
+// ...
 
     public boolean tokenValido(String token) {
         Claims claims = getClaims(token);
@@ -1027,10 +1086,15 @@ public class JWTUtil {
         }
     }
 
-}
+// ...
 ```
 
-- Depois, registrar o filtro na classe **SecurityConfig**
+- Depois, registrar os filtros na classe **SecurityConfig**
+
+```
+http.addFilter(new JWTAuthenticationFilter(authenticationManager(), jwtUtil));
+http.addFilter(new JWTAuthorizationFilter(authenticationManager(), jwtUtil, userDetailsService));
+```
 
 
 
