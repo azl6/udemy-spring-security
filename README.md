@@ -803,9 +803,14 @@ Ao finalizar a sessão de JWT, tentei realizar uma implementação, que falhou.
 
 Sendo assim, usei os vídeos do **Nélio Alves** para realizar a implementação, que segue o seguinte fluxo:
 
-Fluxo da requisição com as credenciais pro endpoint /login
+**Fluxo da requisição com as credenciais pro endpoint /login**
 
 ![authentication](https://user-images.githubusercontent.com/80921933/198421020-3877e3a7-b2e7-4790-804e-8717ad9e9a27.png)
+
+**Fluxo da requisição com um token para um endpoint protegido**
+
+![authorization](https://user-images.githubusercontent.com/80921933/198423775-3b34b9d2-a9c6-4f94-b922-e3418e07a6d8.png)
+
 
 Passo a passo:
 
