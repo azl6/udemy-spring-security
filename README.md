@@ -1133,7 +1133,7 @@ public boolean tokenValido(String token) {
 
 - Depois, registrar os filtros na classe **SecurityConfig**
 
-```
+```java
 http.addFilter(new JWTAuthenticationFilter(authenticationManager(), jwtUtil));
 http.addFilter(new JWTAuthorizationFilter(authenticationManager(), jwtUtil, userDetailsService));
 ```
