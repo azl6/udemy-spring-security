@@ -912,6 +912,7 @@ public class UsuarioSS implements UserDetails {
 - Criar classe que implementa `UserDetailsService`, e sobreescrever o método **loadUserByUsername(String username)**. O usuário será carregado injetando o repositório da classe que mapeia a tabela de usuário no banco. Após confirmarmos que o usuário existe, retornamos um **new UserSS(...)**, passando o id, username, password e a list de authorities (ou perfis) para o construtor.
 
 ```java
+@Service
 public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Autowired
@@ -919,7 +920,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Usuario usuario = usuarioRepository.findByEmail(email).orElseThrow(() -> new ObjectNotFoundException(1, ""));
+        Usuario usuario = usuarioRepository.findByEmail(email);
 
         return new UsuarioSS(usuario.getCdUsuario(), usuario.getEmail(), usuario.getSenha(), usuario.getGrantedAuthorities());
     }
@@ -1071,10 +1072,10 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 ```java
 // ...
 
-    public boolean tokenValido(String token) {
+public boolean tokenValido(String token) {
         Claims claims = getClaims(token);
         if (claims != null) {
-            String username = claims.getSubject();
+            String username = (String) claims.get("username");
             Date expirationDate = claims.getExpiration();
             Date now = new Date(System.currentTimeMillis());
             if (username != null && expirationDate != null && now.before(expirationDate)) {
@@ -1087,7 +1088,7 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
     public String getUsername(String token) {
         Claims claims = getClaims(token);
         if (claims != null) {
-            return claims.getSubject();
+            return (String) claims.get("username");
         }
         return null;
     }
