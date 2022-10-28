@@ -17,7 +17,24 @@
 `JSESSIONID:` Cookie gerado pelo Spring Security. Permite que façamos múltiplos requests com as nossas credenciais. <br>
 ![flow](https://user-images.githubusercontent.com/80921933/194652133-4a70471f-c76d-4f86-ad36-0684d3244189.png) <br>
 
-`Security Context:` Interface que armazena os dados do usuário autenticado. <br>
+`Security Context:` Interface que armazena os dados do usuário autenticado. Podemos utilizar métodos como o **SecurityContextHolder.getContext()** para efetuar diversas operações com o usuário logado, por exemplo. <br>
+
+`Claims:` Informações contidas dentro de um token JWT. Na imagem abaixo, por exemplo, observamos que o token possui 2 Claims:
+
+![claims](https://user-images.githubusercontent.com/80921933/198477351-5d441e5e-e896-4033-bc6c-9e2b7416d77a.png)
+
+As Claims foram definidas no seguinte trecho de código:
+
+![claims](https://user-images.githubusercontent.com/80921933/198478173-bded5458-02de-4143-ac4f-940d9965947f.png)
+
+Principal: O método getPrincipal() retornará o usuário atualmente autenticado:
+
+```java
+Authentication auth; //exemplo...
+
+UsuarioSS usuario = (UsuarioSS) auth.getPrincipal();
+```
+
 
 # Liberação de endpoints básica
 Com a depreciação da classe `WebSecurityConfigurerAdapter`, podemos utilizar a `SecurityFilterChain` como alternativa para configurações de liberação de endpoints.<br>
