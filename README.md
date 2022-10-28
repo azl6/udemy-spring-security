@@ -801,7 +801,11 @@ public class JWTTokenValidatorFilter  extends OncePerRequestFilter {
 
 Ao finalizar a sessão de JWT, tentei realizar uma implementação, que falhou.
 
-Sendo assim, usei os vídeos do **Nélio Alves** para realizar a implementação abaixo.
+Sendo assim, usei os vídeos do **Nélio Alves** para realizar a implementação, que segue o seguinte fluxo:
+
+Fluxo da requisição com as credenciais pro endpoint /login
+
+![authentication](https://user-images.githubusercontent.com/80921933/198421020-3877e3a7-b2e7-4790-804e-8717ad9e9a27.png)
 
 Passo a passo:
 
@@ -887,7 +891,7 @@ public class Authority {
 }
 ```
 
-- Criar classe que implementa `UserDetails` (UserSS no repositório cursomc). Ela deve ter id, email (username), senha e uma lista de GrantedAuthorities
+- Criar classe que implementa `UserDetails`. Ela deve ter id, email (username), senha e uma lista de GrantedAuthorities
 
 ```java
 public class UsuarioSS implements UserDetails {
@@ -917,7 +921,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 }
 ```
 
-- Sobreescrever o método configure na classe de SecurityConfig da seguinte maneira:
+- Sobreescrever o método configure na classe de **SecurityConfig** da seguinte maneira:
 
 ```java
     @Override
@@ -955,9 +959,10 @@ public class JWTUtil {
     @Value("${jwt.expiration}")
     private Long expiration;
 
-    public String generateToken(String username){
+    public String generateToken(UsuarioSS usuario){
         return Jwts.builder()
-                .setSubject(username)
+                .claim("id", usuario.getId())
+                .claim("username", usuario.getUsername())
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(SignatureAlgorithm.HS512, secret.getBytes())
                 .compact();
@@ -969,30 +974,30 @@ public class JWTUtil {
 - Criar a classe **JWTAuthenticationFilter** que extende a classe **UsernamePasswordAuthenticationFilter**, e implementar os métodos **attemptAuthentication(...)** e **successfulAuthentication(...)**
 
 ```java
+@Data
+@AllArgsConstructor
 public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private AuthenticationManager authenticationManager;
+
     private JWTUtil jwtUtil;
 
-    public JWTAuthenticationFilter(AuthenticationManager authenticationManager, JWTUtil jwtUtil) {
-        this.authenticationManager = authenticationManager;
-        this.jwtUtil = jwtUtil;
-    }
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest req,
                                                 HttpServletResponse res) throws AuthenticationException {
 
         try {
-            CredenciaisDTO creds = new ObjectMapper()
-                    .readValue(req.getInputStream(), CredenciaisDTO.class);
+            Credenciais creds = new ObjectMapper()
+                    .readValue(req.getInputStream(), Credenciais.class);
 
             UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(creds.getEmail(), creds.getSenha(), new ArrayList<>());
 
             Authentication auth = authenticationManager.authenticate(authToken);
+
             return auth;
-        }
-        catch (IOException e) {
+
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
@@ -1003,11 +1008,16 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                                             FilterChain chain,
                                             Authentication auth) throws IOException, ServletException {
 
-        String username = ((UserSS) auth.getPrincipal()).getUsername();
-        String token = jwtUtil.generateToken(username);
+        UsuarioSS usuario = (UsuarioSS) auth.getPrincipal();
+
+        String token = jwtUtil.generateToken(usuario);
+
         res.addHeader("Authorization", "Bearer " + token);
+        
         res.addHeader("access-control-expose-headers", "Authorization");
     }
+
+}
 ```
 
 - Para autorizar os usuário, criamos a classe **JWTAuthorizationFilter**, que extende de **BasicAuthenticationFilter**
