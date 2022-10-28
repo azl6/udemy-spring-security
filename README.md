@@ -818,7 +818,16 @@ public class JWTTokenValidatorFilter  extends OncePerRequestFilter {
 
 Ao finalizar a sessão de JWT, tentei realizar uma implementação, que falhou.
 
-Sendo assim, usei os vídeos do **Nélio Alves** para realizar a implementação, que segue o seguinte fluxo:
+Sendo assim, usei os vídeos do **Nélio Alves** para realizar a implementação abaixo.
+
+**O projeto segue o seguinte fluxo:**
+
+Há 3 endpoints: /publico, /autenticado e /autorizado.
+- O /publico não tem restrições
+- O /autenticado exige autenticação (token JWT)
+- O /autorizado exige o perfil de 'ADMIN'
+
+![aaaa](https://user-images.githubusercontent.com/80921933/198618048-d01b9498-a095-42db-9d48-4c0fd146f4c0.png)
 
 **Fluxo da requisição com as credenciais pro endpoint /login**
 
