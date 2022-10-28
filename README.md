@@ -27,7 +27,7 @@ As Claims foram definidas no seguinte trecho de código:
 
 ![claims](https://user-images.githubusercontent.com/80921933/198478173-bded5458-02de-4143-ac4f-940d9965947f.png)
 
-Principal: O método getPrincipal() retornará o usuário atualmente autenticado:
+`Principal:` O método getPrincipal() retornará o usuário atualmente autenticado:
 
 ```java
 Authentication auth; //exemplo...
