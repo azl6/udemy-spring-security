@@ -1149,11 +1149,11 @@ Para utilizá-la, devemos também anotar uma classe de `@Configuration` com o **
 
 # OAUTH2
 
-**Terminologia**
+## **Terminologia**
 
 ![image](https://user-images.githubusercontent.com/80921933/198846454-37d7b5df-2ca2-48c3-9ffa-87643fa393f2.png)
 
-**OAUTH2 grant-type flows**
+## **Grant-type flows**
 
 O **OAUTH2** possui 5 diferentes **grant-type flows**, que são formas como o **Resource Server** fornecerá o acesso aos dados solicitados pelo **Client Server**. São eles:
 
