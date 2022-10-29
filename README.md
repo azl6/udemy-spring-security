@@ -1232,7 +1232,7 @@ public class SpringSecOAUTH2GitHubConfig {
 
 No app.properties, realizar as configurações comentadas acima
 
-```
+```java
 spring.security.oauth2.client.registration.github.client-id=8cf67ab304dc500092e3 # CLIENT ID gerado no Github
 spring.security.oauth2.client.registration.github.client-secret=6e6f91851c864684af2f91eaa08fb5041162768e # CLIENT SECRET gerado no Github
 ```
