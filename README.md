@@ -12,8 +12,10 @@
 - [JWT Tokens](#jwt-tokens)
 - [Projeto 1](#projeto-1)
 - [Method level security](#method-level-security)
+- [OAUTH2](#oauth2)
+- [Implementação do OAUTH2 com o Github](#implementação-do-oauth2-com-o-github)
 
-- [OAUTH2](#OAUTH2)
+
 
 
 # Informações gerais
@@ -1174,6 +1176,19 @@ O **OAUTH2** possui 5 diferentes **grant-type flows**, que são formas como o **
 **Refresh token grant flow**
 
 ![image](https://user-images.githubusercontent.com/80921933/198848884-f3f715ea-4baa-4d26-8c65-35455f95668d.png)
+
+# Implementação do OAUTH2 com o Github
+
+Settings > Developer settings > OAuth Apps > Register a new application
+
+![oauth1](https://user-images.githubusercontent.com/80921933/198851166-5e1e92c5-5144-4d37-840c-985dce5b0333.png)
+
+Gerar **CLIENT ID** e **CLIENTE SECRET**
+
+![oauth1](https://user-images.githubusercontent.com/80921933/198851251-867eaa4c-6798-40cc-a45a-4d6029039cdd.png)
+
+
+
 
 
 
