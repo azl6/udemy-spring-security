@@ -11,6 +11,7 @@
 - [Authentication filters](#authentication-filters)
 - [JWT Tokens](#jwt-tokens)
 - [Projeto 1](#projeto-1)
+- [Method level security](#method-level-security)
 
 
 # Informações gerais
@@ -1137,6 +1138,12 @@ public boolean tokenValido(String token) {
 http.addFilter(new JWTAuthenticationFilter(authenticationManager(), jwtUtil));
 http.addFilter(new JWTAuthorizationFilter(authenticationManager(), jwtUtil, userDetailsService));
 ```
+
+# Method level security
+
+A annotation mais importante dessa categoria é a **@PreAuthorize("hasAnyRole('ROLE_HERE_WITHOUT_ROLE_PREFIX')")**. Ela é utilizada acima dos métodos/endpoints, para indicar que um método só pode ser invocado por usuários logados com certas roles/authorities.
+
+Para utilizá-la, devemos também anotar uma classe de `@Configuration` com o **@EnableGlobalMethodSecurity(prePostEnabled = true)**
 
 
 
