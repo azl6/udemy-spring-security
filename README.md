@@ -13,6 +13,8 @@
 - [Projeto 1](#projeto-1)
 - [Method level security](#method-level-security)
 
+- [OAUTH2](#OAUTH2)
+
 
 # Informações gerais
 `JSESSIONID:` Cookie gerado pelo Spring Security. Permite que façamos múltiplos requests com as nossas credenciais. <br>
@@ -1144,6 +1146,38 @@ http.addFilter(new JWTAuthorizationFilter(authenticationManager(), jwtUtil, user
 A annotation mais importante dessa categoria é a **@PreAuthorize("hasAnyRole('ROLE_HERE_WITHOUT_ROLE_PREFIX')")**. Ela é utilizada acima dos métodos/endpoints, para indicar que um método só pode ser invocado por usuários logados com certas roles/authorities.
 
 Para utilizá-la, devemos também anotar uma classe de `@Configuration` com o **@EnableGlobalMethodSecurity(prePostEnabled = true)**
+
+# OAUTH2
+
+**Terminologia**
+
+![image](https://user-images.githubusercontent.com/80921933/198846454-37d7b5df-2ca2-48c3-9ffa-87643fa393f2.png)
+
+**OAUTH2 grant-type flows**
+
+O **OAUTH2** possui 5 diferentes **grant-type flows**, que são formas como o **Resource Server** fornecerá o acesso aos dados solicitados pelo **Client Server**. São eles:
+
+- Authorization code grant flow
+- Implicit grant flow
+- Password grant flow
+- Client credentials flow
+- Refresh token flow
+
+**Authorization code grant flow**
+
+![image](https://user-images.githubusercontent.com/80921933/198847824-30eba5db-d855-4512-a3f6-be7095027fd2.png)
+
+**Client credentials grant flow**
+
+![image](https://user-images.githubusercontent.com/80921933/198847858-225c2825-5461-4699-8f9a-15979ffc8c76.png)
+
+**Refresh token grant flow**
+
+![image](https://user-images.githubusercontent.com/80921933/198848884-f3f715ea-4baa-4d26-8c65-35455f95668d.png)
+
+
+
+
 
 
 
