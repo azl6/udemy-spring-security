@@ -1179,14 +1179,78 @@ O **OAUTH2** possui 5 diferentes **grant-type flows**, que são formas como o **
 
 # Implementação do OAUTH2 com o Github
 
+Dependencies iniciais
+
+```xml
+<dependency>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-starter-oauth2-client</artifactId>
+</dependency>
+<dependency>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-starter-security</artifactId>
+</dependency>
+<dependency>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-starter-web</artifactId>
+</dependency>
+```
+
 Settings > Developer settings > OAuth Apps > Register a new application
 
 ![oauth1](https://user-images.githubusercontent.com/80921933/198851166-5e1e92c5-5144-4d37-840c-985dce5b0333.png)
 
 Gerar **CLIENT ID** e **CLIENTE SECRET**
 
-![oauth1](https://user-images.githubusercontent.com/80921933/198851251-867eaa4c-6798-40cc-a45a-4d6029039cdd.png)
+![oauth1](https://user-images.githubusercontent.com/80921933/198851251-867eaa4c-6798-40cc-a45a-4d6029039cdd.png)	
 
+Para uma implementação inicial, podemos usar o seguinte **SecurityFilterChain**
+
+```java
+@Configuration
+public class SpringSecOAUTH2GitHubConfig {
+
+    @Bean
+    SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
+        http.authorizeRequests().anyRequest().authenticated().and().oauth2Login();
+        return http.build();
+    }
+
+    /*@Bean Parte comentada, configs realizadas no app.properties para esse exemplo
+    
+    public ClientRegistrationRepository clientRepository() {
+        ClientRegistration clientReg = clientRegistration();
+        return new InMemoryClientRegistrationRepository(clientReg);
+    }
+    private ClientRegistration clientRegistration() {
+		return CommonOAuth2Provider.GITHUB.getBuilder("github").clientId("8cf67ab304dc500092e3")
+	           .clientSecret("6e6f91851c864684af2f91eaa08fb5041162768e").build();
+	 }*/
+
+}
+```
+
+No app.properties, realizar as configurações comentadas acima
+
+```
+spring.security.oauth2.client.registration.github.client-id=8cf67ab304dc500092e3 # CLIENT ID gerado no Github
+spring.security.oauth2.client.registration.github.client-secret=6e6f91851c864684af2f91eaa08fb5041162768e # CLIENT SECRET gerado no Github
+```
+
+Ao tentar acessar o seguinte endpoint, a aplicação direcionará o usuário para a página de autenticação do Github. Caso a autenticação seja bem sucedida, o endpoint retornará o HTML.
+
+```java
+@Controller
+public class SecureController {
+
+    @GetMapping("/")
+    public String main(OAuth2AuthenticationToken token) {
+        System.out.println(token.getPrincipal());
+        return "secure.html";
+    }
+
+}
+```
 
 
 
