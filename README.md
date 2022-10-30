@@ -1348,6 +1348,29 @@ Depois, setamos a seguinte configuração no app.properties
 spring.security.oauth2.resourceserver.jwt.jwk-set-uri = http://localhost:8180/realms/eazybankdev/protocol/openid-connect/certs
 ```
 
+Para visualizar URLs importantes expostas pelo Keycloak, podemos acessar a URL `localhost:[KEYCLOAK_PORT]/realms/[CLIENT_ID]/.well-known/openid-configuration`
+
+**token_endpoint**: URL para pegar um token do Keycloak
+
+**jwks**: URL usada no app.properties para que o Resource Server (aplicação) possa baixar os certificados públicos do Keycloak
+
+![oauth1](https://user-images.githubusercontent.com/80921933/198893086-38fcfa7d-bb36-4f2a-baff-261b7c33d1cc.png)
+
+Depois de checar essas informações, criamos as roles **USER** e **ADMIN** (usadas no sistema) em **[SEU_CLIENT] > Realm roles > Create role**
+
+Depois, atribuímos as roles de **USER** e **ADMIN** ao nosso Client: **Service accounts roles > Assign Role**
+
+![oauth1](https://user-images.githubusercontent.com/80921933/198893347-42aabd91-999d-4aaa-aa2d-34515ce6e6d1.png)
+
+Já podemos mandar uma requisição para o **token_endpoint**, com os dados abaixo, e recuperar os tokens:
+
+![oauth1](https://user-images.githubusercontent.com/80921933/198894413-26434fde-9e47-4631-8afe-34b843fcb355.png)
+
+Jogando o token no jwt.io, percebemos que ele contém todas as informações, como roles, etc.
+
+![oauth1](https://user-images.githubusercontent.com/80921933/198894511-97f2aff2-92b3-4cbe-a4d3-98ab99d45469.png)
+
+
 
 
 
