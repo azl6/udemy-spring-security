@@ -1370,6 +1370,8 @@ Jogando o token no jwt.io, percebemos que ele contém todas as informações, co
 
 ![oauth1](https://user-images.githubusercontent.com/80921933/198894511-97f2aff2-92b3-4cbe-a4d3-98ab99d45469.png)
 
+Com as configurações de código definidas acima, agora podemos tentar acessar um endpoint protegido, passando o valor **Bearer  [access_token]** no header Authorization. Caso o access token seja válido, o endpoint terá seu acesso liberado. 
+
 
 
 
