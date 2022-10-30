@@ -1261,7 +1261,22 @@ Após baixar o Keycloak (https://www.keycloak.org/downloads), basta extrair a pa
 bin/kc.bat start-dev --http-port [PORT_NUMBER]
 ```
 
-(A porta padrão sem a flag --http-port é a 8080)
+(A porta padrão sem a flag **--http-port** é a 8080)
+
+## Clients
+
+Clients são aplicações que podem requerir autenticação de algum usuário.
+
+![oauth1](https://user-images.githubusercontent.com/80921933/198859522-73270ee4-c81a-46d0-9760-ab8c17642e9a.png)
+
+### Criação de Clients
+
+![oauth1](https://user-images.githubusercontent.com/80921933/198859574-eb7efd40-f57f-496b-a1ed-2827f9188823.png)
+
+![oauth1](https://user-images.githubusercontent.com/80921933/198859603-3c99a7b8-b8c4-4001-b6ae-ca92aab2226e.png)
+
+`Service accounts role`: Utilizado quando duas aplicações precisam "conversar"
+
 
 
 
