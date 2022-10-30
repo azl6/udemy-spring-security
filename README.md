@@ -1275,9 +1275,78 @@ Clients são aplicações que podem requerir autenticação de algum usuário.
 
 ![oauth1](https://user-images.githubusercontent.com/80921933/198859603-3c99a7b8-b8c4-4001-b6ae-ca92aab2226e.png)
 
-`Service accounts role`: Utilizado quando duas aplicações precisam "conversar"
+**Service accounts role:** Utilizado quando duas aplicações precisam "conversar"
+
+Antes de começar a implementação no código, devemos **deletar todas as classes/configurações relacionadas a autenticação (como PasswordEncoders, filtros, etc)**. Essa atribuição ficará agora com o Keycloak.
+
+Para transformar nossa aplicação Spring em um **Resource Server**, começamos adicionando a seguinte dependency
+
+```xml
+<dependency>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
+</dependency>
+```
+
+Para converter o token recebido do Keycloak em uma lista de authorities do usuário, criamos a seguinte classe
+
+```java
+public class KeycloakRoleConverter  implements Converter<Jwt, Collection<GrantedAuthority>> {
+
+    @Override
+    public Collection<GrantedAuthority> convert(Jwt jwt) {
+        Map<String, Object> realmAccess = (Map<String, Object>) jwt.getClaims().get("realm_access");
+
+        if (realmAccess == null || realmAccess.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        Collection<GrantedAuthority> returnValue = ((List<String>) realmAccess.get("roles"))
+                .stream().map(roleName -> "ROLE_" + roleName)
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toList());
+
+        return returnValue;
+    }
+
+}
+```
+
+Em nosso SecurityFilterChain, setamos as seguintes configurações
+
+```java
+@Configuration
+public class ProjectSecurityConfig {
+
+    @Bean
+    SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
+    
+JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
+jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(new KeycloakRoleConverter());
+
+// ...
+
+```
+
+Depois, configuramos o SecurityFilterChain para atuar como um **Resource Server**
+
+```java
+
+// ...
 
 
+.antMatchers("/notices","/contact","/register").permitAll()
+.and()
+.oauth2ResourceServer().jwt().jwtAuthenticationConverter(jwtAuthenticationConverter);
+
+return http.build();
+```
+
+Depois, setamos a seguinte configuração no app.properties
+
+```properties
+spring.security.oauth2.resourceserver.jwt.jwk-set-uri = http://localhost:8180/realms/eazybankdev/protocol/openid-connect/certs
+```
 
 
 
