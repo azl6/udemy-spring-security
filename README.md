@@ -14,6 +14,7 @@
 - [Method level security](#method-level-security)
 - [OAUTH2](#oauth2)
 - [Implementação do OAUTH2 com o Github](#implementação-do-oauth2-com-o-github)
+- [Keycloak](#keycloak)
 
 
 
@@ -1251,6 +1252,16 @@ public class SecureController {
 
 }
 ```
+
+# Keycloak
+
+Após baixar o Keycloak (https://www.keycloak.org/downloads), basta extrair a pasta para algum diretório (C://Program Files) e rodar 
+
+```
+bin/kc.bat start-dev --http-port [PORT_NUMBER]
+```
+
+(A porta padrão sem a flag --http-port é a 8080)
 
 
 
